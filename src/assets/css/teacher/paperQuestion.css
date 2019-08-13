@@ -1,0 +1,151 @@
+.qs-title {
+  padding-left: 16px;
+  line-height: 25px;
+  position: relative;
+  color: #394c65;
+  margin-right: 16px;
+  font-size: 18px;
+}
+.qs-content{
+  margin-top: 10px;
+}
+.qs-title:before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 20px;
+  background-color: #2199de;
+  position: absolute;
+  left: 0;
+  top: 2px;
+}
+.qs-info {
+  padding-top: 17px;
+}
+.item-content {
+  line-height: 22px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.item-answer {
+  font-size: 14px;
+}
+.item-answer-condition {
+  font-size: 14px;
+  margin-top: 10px;
+}
+.horn-icon{
+  display: inline-block;
+  position: relative;
+  width: 22px;
+  height: 13px;
+  background-image: url(~@/assets/images/horn.png);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position: center;
+  cursor: pointer;
+  top: 2px;
+  left: 0;
+  margin-left: 10px;
+}
+.horn-icon.playing {
+  background-image: url(~@/assets/images/horn-ing.gif);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.option-img {
+  height: 80px;
+}
+.info-img {
+  max-width: 650px
+}
+.part-btn {
+  margin-top: 13px;
+  height: 31px;
+  margin-bottom: 21px;
+}
+.green-btn {
+  outline: 0;
+  border-radius: 3px;
+  border: 1px solid #ececed;
+  color: #3fa7e2;
+  width: 130px;
+  height: 30px;
+  line-height: 28px;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+  margin-right: 20px;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 100%;
+  empty-cells: show;
+}
+table thead {
+  color: #788695;
+  font-size: 12px;
+}
+table thead tr {
+  height: 36px;
+}
+#tb-score td {
+  width: 16.16161616%;
+}
+table thead td {
+  background: #f3f6fa;
+  height: 36px;
+  position: relative;
+}
+tbody tr:nth-child(odd) {
+  background: #fff;
+}
+#tb-score td {
+  width: 16.16161616%;
+}
+table tbody td {
+  height: 40px;
+  font-size: 12px;
+  color: #506379;
+  position: relative;
+  line-height: normal;
+}
+tbody tr:nth-child(even) {
+  background: #f6f9fc;
+}
+table {
+  width: 100%;
+  text-align: center;
+}
+#tb-percent {
+  width: 460px;
+}
+table tbody .td-ans {
+  max-width: 140px;
+}
+.ml8 {
+  margin-left: 8px;
+}
+.mr8 {
+  margin-right: 8px;
+}
+.ib {
+  display: inline-block;
+}
+.ans-right {
+  color: #68dfa8;
+}
+.ans-wrong {
+  color: #fb4545;
+}
+.horn-w {
+  width: 125px;
+  height: 25px;
+  line-height: 25px;
+  text-align: left;
+}
+.t-l {
+  text-align: left;
+}

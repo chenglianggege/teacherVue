@@ -1,0 +1,461 @@
+<template>
+  <el-container v-loading.fullscreen.body.lock="fullscreenLoading">
+    <el-header height="80px" class="header">
+      <layoutHeader :activeIndex="activeIndex"></layoutHeader>
+    </el-header>
+    <el-main  class="container"  v-if="fullscreenLoading"></el-main>
+    <el-main  class="container"  v-if="!fullscreenLoading">
+      <div class="no-class" v-show="classList.length === 0">
+        <div>
+          <img src="@/assets/images/wubanjichatu.png" style="width: 229px;height: 136px;margin-bottom: 40px"/>
+        </div>
+        <div>您还没有班级哦，赶快去创建班级吧！</div>
+        <div><el-button type="primary" @click="dialogAddClassFormVisible=true" class="btn-create-class">创建班级</el-button></div>
+      </div>
+      <div class="class-content" v-show="classList.length > 0">
+        <el-tabs  v-model="activeClass" type="card" @tab-click="activeClassChange" >
+          <el-tab-pane :lazy="true" :label="classItem.class_name" :name="classItem.class_id + ''" v-for="(classItem, idx) in classList" :key="idx">
+            <div class="class-info" v-if="classDetail.hasOwnProperty(classItem.class_id)">
+              <div>
+                <span class="pr20">班级人数: {{classDetail[classItem.class_id].student_num}}</span>
+                <span class="pr20">激活人数: {{classDetail[classItem.class_id].activity_num}}</span>
+                <span class="pr20">班级年度: {{classDetail[classItem.class_id].class_year}}</span>
+              </div>
+              <div class="right">
+                <div class="detail-sel" @click="dialogAddStudentFormVisible = true;addStudentForm.student_phone='';addStudentForm.student_name=''">
+                  <span class="blue">添加学生</span>
+                  <span class="iconfont icon-xuesheng blue"></span>
+                </div>
+                <div class="detail-sel" @click="editClass(classItem.class_id)">
+                  <span class="blue">修改班级</span>
+                  <span class="iconfont icon-edit blue"></span>
+                </div>
+                <div class="detail-sel" @click="delClass(classItem.class_id)">
+                  <span class="red">删除班级</span>
+                  <span class="iconfont icon-del red"></span>
+                </div>
+              </div>
+            </div>
+            <div class="class-list" v-if="classDetail.hasOwnProperty(classItem.class_id)">
+              <el-table
+                v-loading="loading"
+                stripe
+                :data="classDetail[classItem.class_id].students"
+                style="width: 100%"
+                empty-text="GG"
+              >
+                <el-table-column
+                  prop="student_name"
+                  label="备注姓名"
+                  sortable
+                  align="center">
+                </el-table-column>
+                <el-table-column label="头像" align="center" class-name="no-padding" class="no-padding">
+                  <template slot-scope="scope">
+                    <img class="header-img" :src="scope.row.user_avatar ? PIC_STATIC + scope.row.user_avatar + '?x-oss-process=image/resize,h_100' : default_stu_avatar"/>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="student_phone"
+                  sortable
+                  label="登录号码"
+                  align="center"
+                  >
+                </el-table-column>
+                <el-table-column prop="expire_status" sortable label="绑卡状态" align="center">
+                  <template slot-scope="scope">
+                    <span :class="scope.row.expire_status == 1 ? 'black' : 'red'">{{scope.row.expire_status == 0 ?(!scope.row.expire_time ? '未绑定' : '已过期') : '正常'}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="address" label="操作" align="center" width="280px">
+                  <template slot-scope="scope">
+                    <el-button class="table-btn" type="text" @click="editPassword(scope.row)"></el-button>
+                    <el-button class="table-btn" type="text" @click="editStudent(scope.row)">修改学生</el-button>
+                    <el-button class="table-btn" type="text" @click="delStudent(scope.row)">移除学生</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div class="nostudent" v-if="classDetail[classItem.class_id].students.length === 0">
+                <img class="nostudentpic" src="@/assets/images/df_student.png" alt="">
+                <p style="text-align:center;">这个班还没有学生哦~</p>
+                <el-button class="addstudent-no" type="primary" @click="dialogAddStudentFormVisible = true;addStudentForm.student_phone='';addStudentForm.student_name=''">添加学生</el-button>
+              </div>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+        <el-button type="primary" class="btn-add" @click="dialogAddClassFormVisible=true"><i class="el-icon-plus"></i>新增班级</el-button>
+      </div>
+      <addClass :visible="dialogAddClassFormVisible" v-on:close="initClassList();dialogAddClassFormVisible = false"></addClass>
+      <el-dialog title="编辑学生" width="30%" :visible.sync="dialogEditStudentFormVisible">
+        <el-form :model="editStudentForm" label-width="100px">
+          <el-form-item label="学生姓名">
+            <el-input v-model="editStudentForm.student_name" auto-complete="off" placeholder="2-6个汉字"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogEditStudentFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveStudent">确 定</el-button>
+        </div>
+      </el-dialog>
+      <el-dialog title="编辑班级" width="35%" :visible.sync="dialogEditClassFormVisible">
+        <el-form :model="editClassForm" label-width="100px">
+          <el-form-item label="班级名称">
+            <el-input maxlength="8" v-model="editClassForm.class_name" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="班级年度" >
+            <el-radio-group v-model="editClassForm.year" size="small">
+              <el-radio-button v-for="(year, index) in years"  :key="index" :label="year"></el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="班级年级" >
+            <el-select v-model="editClassForm.grade" placeholder="请选择">
+              <el-option
+                v-for="item in grades.grades_list"
+                :key="item.grade_id"
+                :label="item.grade_name"
+                :value="item.grade_id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogEditClassFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveClass">确 定</el-button>
+        </div>
+      </el-dialog>
+      <el-dialog title="添加学生" width="30%" :visible.sync="dialogAddStudentFormVisible">
+        <el-form :model="editStudentForm" label-width="100px">
+          <el-form-item label="手机号码">
+            <el-input v-model="addStudentForm.student_phone" auto-complete="off" placeholder="家长或学生的手机号码"></el-input>
+          </el-form-item>
+          <el-form-item label="备注姓名">
+            <el-input v-model="addStudentForm.student_name" auto-complete="off" placeholder="2-6个汉字"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogAddStudentFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addStudent">确 定</el-button>
+        </div>
+      </el-dialog>
+    </el-main>
+    <el-footer height="100px" class="footer">
+      <layout-footer></layout-footer>
+    </el-footer>
+  </el-container>
+</template>
+
+<script>
+import layoutHeader from '@/components/common/layoutHeader'
+import layoutFooter from '@/components/common/layoutFooter'
+import defaultStuAvatar from '@/assets/images/df_student.png'
+import axios from 'axios'
+import addClass from '@/components/common/addClass'
+export default {
+  name: 'classList',
+  components: {
+    layoutHeader, layoutFooter, addClass
+  },
+  data () {
+    return {
+      activeIndex: '4',
+      fullscreenLoading: true,
+      classList: [],
+      default_stu_avatar: defaultStuAvatar,
+      dialogAddClassFormVisible: false,
+      dialogEditPasswordFormVisible: false,
+      dialogEditStudentFormVisible: false,
+      dialogEditClassFormVisible: false,
+      dialogAddStudentFormVisible: false,
+      PIC_STATIC: window.PIC_STATIC,
+      activeClass: '0',
+      classDetail: {},
+      loading: true,
+      editStudentForm: {},
+      editClassForm: {},
+      addStudentForm: {},
+      years: [],
+      grades: []
+    }
+  },
+  methods: {
+    async initClassList (classId) {
+      let token = localStorage.getItem('token')
+      let pressID = localStorage.getItem('pressID')
+      try {
+        this.fullscreenLoading = true
+        let classList = await axios.get(window.API_URL + '/v2/teacher/sclass/list', {params: {token: token}})
+        if (classList.data.retCode === 0) {
+          this.classList = classList.data.retData ? classList.data.retData : []
+          if (this.classList.length) {
+            this.activeClass = classId > 0 ? classId : this.classList[0].class_id
+            this.getClassDetail()
+          } else {
+            this.fullscreenLoading = false
+          }
+        }
+        let grades = await axios.get(window.API_URL + '/v2/teacher/paper/grades', {params: {token: token, press_id: pressID}})
+        if (grades.data.retCode === 0) {
+          this.grades = grades.data.retData
+        }
+      } catch (e) {
+        console.log(e)
+      } finally {
+      }
+    },
+    async activeClassChange (tab, event) {
+      this.getClassDetail()
+    },
+    async getClassDetail () {
+      let classId = this.activeClass
+      this.loading = true
+      let token = localStorage.getItem('token')
+      try {
+        let classDetail = await axios.get(window.API_URL + '/v2/teacher/sclass/detail', {params: {token: token, class_id: classId}})
+        if (classDetail.data.retCode === 0) {
+          this.classDetail[classId] = classDetail.data.retData
+        }
+      } catch (e) {
+        console.log(e)
+      } finally {
+        this.loading = false
+        this.fullscreenLoading = false
+      }
+    },
+    delClass (classId) {
+      let classItem = this.classDetail[classId]
+      let token = localStorage.getItem('token')
+      let _this = this
+      this.$confirm('是否确认删除此班级?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios.post(window.API_URL + '/v2/teacher/sclass/del', {class_id: classItem.class_id}, {params: {token: token}}).then(function (ret) {
+          if (ret.data.retCode === 0) {
+            return _this.initClassList()
+          } else {
+            _this.$message.error({message: ret.data.retMsg, showClose: true})
+          }
+        })
+      }).catch(() => {})
+    },
+    delStudent (student) {
+      let token = localStorage.getItem('token')
+      let _this = this
+      this.$confirm('是否确认删除学生' + student.student_name + '?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        axios.post(window.API_URL + '/v2/teacher/sclass/remove', {class_id: _this.activeClass, student_id: student.student_id}, {params: {token: token}}).then(function (ret) {
+          if (ret.data.retCode === 0) {
+            _this.getClassDetail(_this.activeClass)
+            _this.$message({
+              type: 'success',
+              message: '删除成功!',
+              showClose: true
+            })
+          } else {
+            _this.$message.error({message: ret.data.retMsg, showClose: true})
+          }
+        })
+      }).catch(() => {})
+    },
+    editPassword (student) {},
+    editClass (classId) {
+      let classItem = this.classDetail[classId]
+      this.editClassForm = {
+        class_name: classItem.class_name,
+        year: classItem.class_year,
+        grade: Number(classItem.grade_id),
+        class_id: classItem.class_id
+      }
+      this.dialogEditClassFormVisible = true
+    },
+    editStudent (student) {
+      this.editStudentForm = {
+        student_id: student.student_id,
+        student_no: student.student_no,
+        parents_phone: student.parents_phone,
+        student_name: student.student_name
+      }
+      this.dialogEditStudentFormVisible = true
+    },
+    saveStudent () {
+      if (!this.editStudentForm.student_name || this.editStudentForm.student_name.length < 2 || this.editStudentForm.student_name.length > 6) {
+        this.$message.error({message: '请输入备注姓名(2-6个汉字)', showClose: true})
+        return
+      }
+      let token = localStorage.getItem('token')
+      let _this = this
+      axios.post(window.API_URL + '/v2/teacher/sclass/edit-student',
+        this.editStudentForm,
+        {params: {token: token}}).then(function (ret) {
+        if (ret.data.retCode === 0) {
+          _this.dialogEditStudentFormVisible = false
+          _this.getClassDetail(_this.activeClass)
+          _this.$message({
+            type: 'success',
+            message: '修改成功!',
+            showClose: true
+          })
+        } else {
+          _this.$message.error({message: ret.data.retMsg, showClose: true})
+        }
+      })
+    },
+    addStudent () {
+      let regx = /^1\d{10}$/
+      if (!regx.test(this.addStudentForm.student_phone)) {
+        this.$message.error({message: '请输入正确的11位手机号码!', showClose: true})
+        return
+      }
+      if (!this.addStudentForm.student_name || this.addStudentForm.student_name.length < 2 || this.addStudentForm.student_name.length > 6) {
+        this.$message.error({message: '请输入备注姓名(2-6个汉字)', showClose: true})
+        return
+      }
+      let token = localStorage.getItem('token')
+      let _this = this
+      this.addStudentForm.class_id = this.activeClass
+      axios.post(window.API_URL + '/v2/teacher/sclass/add-student',
+        this.addStudentForm,
+        {params: {token: token}}).then(function (ret) {
+        if (ret.data.retCode !== 0) {
+          _this.$message.error({message: ret.data.retMsg, showClose: true})
+          return
+        }
+        _this.dialogAddStudentFormVisible = false
+        _this.getClassDetail(_this.activeClass)
+        _this.$message({
+          type: 'success',
+          message: '添加成功!',
+          showClose: true
+        })
+      })
+    },
+    saveClass () {
+      if (!this.editClassForm.class_name || this.editClassForm.class_name.length < 2 || this.editClassForm.class_name.length > 6) {
+        this.$message.error({message: '请输入班级名称(2-8个字符)', showClose: true})
+        return
+      }
+      let token = localStorage.getItem('token')
+      let _this = this
+      axios.post(window.API_URL + '/v2/teacher/sclass/save',
+        this.editClassForm,
+        {params: {token: token}}).then(function (ret) {
+        if (ret.data.retCode === 0) {
+          _this.dialogEditClassFormVisible = false
+          _this.initClassList()
+          _this.$message({
+            type: 'success',
+            message: '修改成功!',
+            showClose: true
+          })
+        } else {
+          _this.$message.error({message: ret.data.retMsg, showClose: true})
+        }
+      })
+    }
+  },
+  created () {
+    this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    let year = new Date().getFullYear()
+    this.years.push((year - 1) + '~' + year)
+    this.years.push(year + '~' + (year + 1))
+    let classId = this.$route.query.hasOwnProperty('classId') ? this.$route.query.classId : '0'
+    this.initClassList(classId)
+  }
+}
+</script>
+<style>
+  .class-content .el-table__empty-block{
+    display:none;
+  }
+  .el-tabs__header{
+    width: 930px;
+  }
+  .no-padding{
+    padding: 0 0 !important;
+  }
+  .addstudent-no{
+    position: absolute;
+    left: 50%;
+    bottom: 140px;
+    margin-left: -49px;
+  }
+</style>
+
+<style scoped>
+  .container{
+    display: -webkit-flex;display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+  .no-class{
+    height: 500px;
+    width: 1040px;
+    background-color: #ffffff;
+    display: -webkit-flex;display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .class-content{
+    width: 1040px;
+    background-color: #ffffff;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    position:relative;
+  }
+  .btn-create-class{
+    margin-top: 10px;
+  }
+  .class-info{
+    height: 50px;
+    line-height: 50px;
+    padding: 0 10px;
+    display: -webkit-flex;display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .pr20{
+    padding-right: 20px;
+  }
+  .class-info .right{
+    display: -webkit-flex;display: flex;
+    flex-direction: row;
+  }
+  .detail-sel {
+    display: inline-block;
+    padding-left: 11px;
+    padding-right: 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .header-img {
+    height: 40px;
+    width: 40px;
+    border-radius: 40px;
+    position: relative;
+    margin-top: 8px;
+  }
+  .table-btn{
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+  .btn-add{
+    position: absolute;top: 2px;right: 0;padding: 10px 15px;width: 102px
+  }
+  .nostudent{
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    position: relative;
+  }
+  .nostudent .nostudentpic{
+    display: block;
+    width: 170px;
+    height: 170px;
+    margin: 50px auto 40px;
+  }
+</style>

@@ -1,0 +1,31 @@
+<div class="sel-content fr">
+          <el-popover placement="bottom-end" trigger="click">
+            <span slot="reference" class="for-sel-win"><span class="icon-sel"></span>筛选</span>
+            <div class="sel-win">
+              <div class="sel-type-box">
+                <p>作业名称<span class="clear-sel">清除筛选</span></p>
+                <el-input size="mini" placeholder="请输入作业名称"></el-input>
+              </div>
+              <div class="sel-type-box sel-status">
+                <p>状态</p>
+                <ul>
+                  <li><el-checkbox v-model="checked">未开始</el-checkbox></li>
+                  <li><el-checkbox v-model="checked">进行中</el-checkbox></li>
+                  <li><el-checkbox v-model="checked">已结束</el-checkbox></li>
+                </ul>
+                <div class="cl-fix"></div>
+              </div>
+              <div class="sel-type-box sel-class">
+                <p>班级</p>
+                <ul>
+                  <li><el-checkbox v-model="checked">九年级20班</el-checkbox></li>
+                  <li><el-checkbox v-model="checked">八年级1班</el-checkbox></li>
+                </ul>
+                <div class="cl-fix"></div>
+              </div>
+              <div class="sel-btn-box">
+                <el-button type="primary" class="sure-check-btn cc-btn">确定查询</el-button>
+              </div>
+            </div>
+          </el-popover>
+        </div>

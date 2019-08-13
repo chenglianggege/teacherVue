@@ -1,0 +1,261 @@
+.icon-people {
+  width: 20px;
+  height: 20px;
+  background: url(~@/assets/images/sprite-index.png) -352px 0 no-repeat;
+  position: relative;
+  top: 5px;
+  left: 0;
+  display: inline-block;
+  margin-right: 12px;
+}
+.icon-homework {
+  width: 18px;
+  height: 20px;
+  background: url(~@/assets/images/sprite-index.png) -334px 0 no-repeat;
+  position: relative;
+  top: 5px;
+  left: 1px;
+  display: inline-block;
+  margin-right: 15px;
+}
+.icon-school {
+  width: 20px;
+  height: 20px;
+  background: url(~@/assets/images/sprite-index.png) -293px 0 no-repeat;
+  position: relative;
+  top: 4px;
+  left: 0;
+  display: inline-block;
+  margin-right: 13px;
+}
+.icon-shopping {
+  margin: 0 auto;
+  margin-bottom: 8px;
+  display: block;
+  position: relative;
+  width: 28px;
+  height: 30px;
+  background: url(~@/assets/images/sprite-shopping.png) no-repeat -32px 0;
+}
+.mb50 {
+  margin-bottom: 50px;
+}
+.mr96 {
+  margin-right: 96px;
+}
+.fs14{
+  font-size: 14px;
+}
+.ffHT {
+  font-family: '黑体'!important;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.cl-fix {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+  clear: both;
+}
+.clear:after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+  clear: both;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+}
+.el-footer {
+  padding: 0 !important;
+}
+a:active, a:hover, a:link, a:visited {
+  color: #5cb4e7;
+  text-decoration: none;
+}
+.tooltip{
+  background: rgba(72,178,246,.8) !important;
+  color: #fff !important;
+}
+.el-tooltip__popper.is-dark {
+  background: rgba(72,178,246,.8) !important;
+  color: #fff !important;
+}
+
+.no-1 {
+  background: url(~@/assets/images/sprite-index.png) no-repeat 0 -1px;
+}
+.no-2 {
+  background: url(~@/assets/images/sprite-index.png) no-repeat -53px 0;
+}
+.no-3 {
+  background: url(~@/assets/images/sprite-index.png) no-repeat -107px 0;
+}
+.question-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  bottom: 15px;
+  right: 18px;
+  background: url(~@/assets/images/icon-question.png) no-repeat 0 0;
+}
+
+.no-1 .rank-sign {
+  width: 38px;
+  left: 8px;
+  background: url(~@/assets/images/sprite-index.png) no-repeat -237px 0;
+}
+.no-2 .rank-sign {
+  width: 39px;
+  background: url(~@/assets/images/sprite-index.png) no-repeat -198px 0;
+}
+.no-3 .rank-sign {
+  width: 40px;
+  background: url(~@/assets/images/sprite-index.png) no-repeat -159px 0;
+}
+.rank-sign {
+  height: 13px;
+  position: absolute;
+  top: 46px;
+  left: 7px;
+}
+.c_red,.red{
+  color: red;
+}
+.black {
+  color: #606266;
+}
+.el-main {
+  padding: 0px !important;
+}
+.header{
+  background: #ffffff;
+  line-height: 40px;
+  position: relative;
+  font-size: 16px;
+}
+.main{
+  background: #ffffff;
+  width: 1040px;
+  margin: 20px auto !important;
+}
+.c-body {
+  margin: 0 auto;
+  padding: 16px 0px;
+  max-width: 1040px;
+}
+.c-body .a-for-back {
+  color: #555;
+}
+ul, ol, li, dl {
+  list-style-type: none;
+}
+.mr13 {
+  margin-right: 13px;
+}
+.container{
+  background: #f1f6fb;
+  border-top: 1px solid #e9e9e9;
+  padding-bottom: 14px;
+  min-height: 783px;
+  width: 100%;
+  min-width: 1040px;
+  color: #404040;
+  position: relative;
+}
+.icon-for-back {
+  display: inline-block;
+  width: 7px;
+  height: 12px;
+  position: relative;
+  top: 0;
+  margin-left: 14px;
+  margin-right: 9px;
+  background: url(~@/assets/images/icon-for-back.png) no-repeat;
+}
+
+.icon-can {
+  position: relative;
+  top: 1px;
+  left: -3px;
+  width: 14px;
+  height: 13px;
+  display: inline-block;
+  background: url(~@/assets/images/sprite-class-detail.png) no-repeat -51px 0;
+}
+.icon-for-back {
+  display: inline-block;
+  width: 7px;
+  height: 12px;
+  position: relative;
+  top: 0;
+  margin-left: 14px;
+  margin-right: 9px;
+  background: url(~@/assets/images/icon-for-back.png) no-repeat;
+}
+.blue {
+  color: #3aa0e0;
+}
+.c-blue {
+  color: #84aeda;
+}
+.c-orange {
+  color: #ffa600;
+}
+.c-red {
+  color: #f23939;
+}
+.st-group-b {
+  margin-top: 10px;
+}
+.st-group {
+  margin-top: 44px;
+  position: relative;
+}
+.st-group-title {
+  margin-bottom: 23px;
+}
+.st-group-title {
+  font-size: 18px;
+  line-height: 20px;
+  font-weight: 400;
+  position: relative;
+  padding-left: 16px;
+  color: #3d3d3d;
+  height: 20px;
+}
+.st-group-title:before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 20px;
+  background-color: #2199de;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.ml20{
+  margin-left: 20px;
+}

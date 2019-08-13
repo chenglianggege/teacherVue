@@ -1,0 +1,315 @@
+<template>
+  <div>
+    <div class="header">
+      <div class="header-con getHeader">
+        <div class="header-icon">
+          <a href="index.html" target="_self"></a>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="the-body">
+        <div class="con-div">
+          <el-carousel style="width: 632px;margin-top: 124px;" height="511px" indicator-position="none">
+            <el-carousel-item class="slide-div">
+                <img src="@/assets/images/i-bb-01.png" alt="" class="ln9 t3">
+                <div class="slide-text">
+                  <p class="fs39 mb8">试题在线预览</p>
+                  <p class="fs22">ONLINE PREVIEW</p>
+                </div>
+            </el-carousel-item>
+            <el-carousel-item class="slide-div">
+                <img src="@/assets/images/i-bb-02.png" alt="" class="ln9 t3">
+                <div class="slide-text">
+                  <p class="fs39 mb8">作业快速布置</p>
+                  <p class="fs22">HOMEWORK</p>
+                </div>
+            </el-carousel-item>
+            <el-carousel-item class="slide-div">
+              <img src="@/assets/images/i-bb-03.png" alt="" class="ln9 t3">
+              <div class="slide-text">
+                <p class="fs39 mb8">实时学情管理</p>
+                <p class="fs22">MANAGEMENT</p>
+              </div>
+            </el-carousel-item>
+            <el-carousel-item class="slide-div">
+              <img src="@/assets/images/i-bb-04.png" alt="" class="ln9 t3">
+              <div class="slide-text">
+                <p class="fs39 mb8">多终端登录</p>
+                <p class="fs22">MULITI DEVICE SUPPORT</p>
+              </div>
+            </el-carousel-item>
+          </el-carousel>
+          <div class="login-win">
+            <div class="login-title">
+              <div class="login-type fl" data-id="login">欢迎回来~</div>
+            </div>
+            <div class="login type">
+              <form>
+                <div class="input-div mb18">
+                  <span class="icon-phone icon"></span>
+                  <input type="text" auto-complete="off" v-model="loginForm.phone"  placeholder="请输入手机号码" class="login-input">
+                </div>
+                <div class="input-div">
+                  <span class="icon-pass icon"></span>
+                  <input type="password" auto-complete="off" v-model="loginForm.password"  placeholder="请输入密码" class="login-input">
+                </div>
+                <el-button type="primary" class="login-submit" :loading="loginIng" @click="loginIn">登录</el-button>
+                <div class="form-footer">
+                  <router-link to="forget" class="fl">忘记密码？</router-link>
+                  <span class="gray-line"></span>
+                  <router-link to="reg" class="fl">注册</router-link>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="cl-fix"></div>
+      </div>
+    </div>
+    <el-footer height="100px" class="footer">
+      <layout-footer></layout-footer>
+    </el-footer>
+  </div>
+</template>
+
+<script>
+import layoutFooter from '@/components/common/layoutFooter'
+import axios from 'axios'
+export default {
+  name: 'login',
+  components: {
+    layoutFooter
+  },
+  data () {
+    return {
+      loginIng: false,
+      loginForm: {
+        role: 2,
+        phone: '',
+        password: '',
+        device: 'WEB'
+      }
+    }
+  },
+  methods: {
+    async loginIn () {
+      let _this = this
+      this.loginIng = true
+      let loginRet = await axios.post(window.API_URL + '/v2/account/login', this.loginForm)
+      if (loginRet.data.retCode !== 0) {
+        _this.$alert(loginRet.data.retMsg, '登录', {confirmButtonText: '确定'})
+        this.loginIng = false
+        return
+      }
+      localStorage.setItem('token', loginRet.data.retData.token)
+      localStorage.setItem('role', _this.loginRole)
+      let userInfo = await axios.get(window.API_URL + '/v2/account/info', {
+        params: {token: loginRet.data.retData.token}
+      })
+      if (userInfo.data.retCode !== 0) {
+        _this.$alert(userInfo.data.retMsg, '登录', {confirmButtonText: '确定'})
+        this.loginIng = false
+        return
+      }
+      localStorage.setItem('userInfo', JSON.stringify(userInfo.data.retData))
+      _this.$router.push(_this.loginRole === 1 ? '/student/index' : '/teacher/index')
+    }
+  },
+  async created () {
+    let token = localStorage.getItem('token')
+    let role = parseInt(localStorage.getItem('role'))
+    if (token && role) {
+      let userInfo = await axios.get(window.API_URL + '/v2/account/info', {
+        params: {token: token}
+      })
+      if (userInfo.data.retCode === 0) {
+        localStorage.setItem('userInfo', JSON.stringify(userInfo.data.retData))
+        this.$router.push(role === 1 ? '/student/index' : '/teacher/index')
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .container {
+    padding-bottom: 0px !important;
+  }
+  .header {
+    width: 100%;
+    min-width: 1040px;
+    background: #fff;
+  }
+  .header-con {
+    position: relative;
+    width: 1040px;
+    height: 80px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .header-icon {
+    width: 240px;
+    height: 100%;
+    float: left;
+  }
+  .header-icon a {
+    background: url(~@/assets/images/17kouyu.png) no-repeat center;
+    display: block;
+    width: 100%;
+    height: 45px;
+    position: relative;
+    top: 7px;
+  }
+  .the-body {
+    width: 100%;
+    height: 783px;
+    min-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background-image: url(~@/assets/images/i-cb-all.png);
+  }
+  .con-div {
+    width: 1000px;
+    margin: 0 auto 0;
+    height: 100%;
+    position: relative;
+  }
+  .login-win {
+    width: 333px;
+    height: 361px;
+    background: #fff;
+    border-radius: 6px;
+    position: absolute;
+    top: -10px;
+    right: 35px;
+  }
+  .login-title {
+    height: 60px;
+    font-size: 20px;
+    text-align: center;
+    color: #555;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+  .login {
+    padding-top: 37px;
+  }
+  .login-type {
+    width: 49%;
+    height: 60px;
+    line-height: 60px;
+    cursor: pointer;
+  }
+  .mb18 {
+    margin-bottom: 18px;
+  }
+  .input-div {
+    position: relative;
+  }
+  .icon-phone {
+    width: 10px;
+    height: 13px;
+    left: 46px;
+    top: 14px;
+    background: url(~@/assets/images/sprite-login.png) no-repeat 0 0;
+  }
+  .icon-pass {
+    width: 12px;
+    height: 13px;
+    left: 45px;
+    top: 14px;
+    background: url(~@/assets/images/sprite-login.png) no-repeat -10px 0;
+  }
+  .icon {
+    position: absolute;
+  }
+  .login-input {
+    height: 40px;
+    width: 268px;
+    display: block;
+    outline: 0;
+    padding-left: 34px;
+    background: #f9fcfe;
+    margin: 0 auto;
+    border: 1px solid #d9dee2;
+  }
+  .remPass-div {
+    margin-top: 8px;
+    padding-left: 34px;
+  }
+  .rem_pass {
+    height: 12px;
+    width: 12px;
+    border: 1px solid #d9dee2;
+    margin-left: 3px;
+    margin-right: 5px;
+    position: relative;
+    top: 2px;
+    cursor: pointer;
+  }
+  .remPass-div label {
+     font-size: 12px;
+     color: #000;
+     cursor: pointer;
+   }
+  #login_tip {
+    color: #ee6d3a;
+    margin-left: 20px;
+    font-size: 13px;
+  }
+  .form-footer {
+    display: block;
+    height: 40px;
+    width: 268px;
+    margin: 0 auto;
+    font-size: 12px;
+    margin-top: 17px;
+  }
+  .form-footer a {
+    color: #47a4f2;
+  }
+  .gray-line {
+    float: left;
+    display: inline-block;
+    position: relative;
+    top: 3px;
+    margin-left: 6px;
+    margin-right: 10px;
+    border: 1px solid #d7dbdd;
+    height: 10px;
+  }
+  .login-submit {
+    text-align: center;
+    width: 268px;
+    margin: 0 auto;
+    display: block;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 17px;
+  }
+  .slide-div img {
+    position: relative;
+  }
+  .t3 {
+    top: 3px;
+  }
+  .ln9 {
+    position: relative;
+    left: -9px;
+  }
+  .slide-text {
+    position: absolute;
+    top: -11px;
+    left: 35px;
+    color: #fff;
+  }
+  .fs39 {
+    font-size: 38.52px;
+  }
+  .fs22 {
+    font-size: 22px;
+    letter-spacing: 4.5px;
+  }
+</style>
